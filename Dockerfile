@@ -25,4 +25,15 @@ RUN useradd -m -s /bin/bash osdev && \
 
 USER osdev
 
+# Dynamic User Creation
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Create group and user only if they don't exist (safety for base image defaults)
+RUN groupadd -g ${GROUP_ID} osdev || true && \
+    useradd -l -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash osdev || true
+
+# Set permissions for the workspace
+RUN chown -R osdev:osdev /workspace
+
 CMD ["/bin/bash"]

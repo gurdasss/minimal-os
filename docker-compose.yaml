@@ -1,15 +1,26 @@
-
 services:
   osdev:
-    build: .
+    build:
+      context: .
+      args:
+        # Pass your host user ID to keep file permissions in sync
+        USER_ID: 1000 
+        GROUP_ID: 1000
     container_name: osdev-environment
     volumes:
-      # Mount the entire bootloader directory
+      # Map your project root to /workspace
       - .:/workspace
-      # Mount home directory for persistent shell history
-      # - ./home:/home/osdev
+      # Persistent history without the local folder clutter
+      - osdev_home:/home/osdev
+    environment:
+      # Tell bash where to save history inside the volume
+      - HISTFILE=/home/osdev/.bash_history
     stdin_open: true
     tty: true
-    # Keep container running
+    # Ensures you start in the right place
+    working_dir: /workspace
     command: tail -f /dev/null
- 
+
+volumes:
+  # Docker manages this volume internally
+  osdev_home:
