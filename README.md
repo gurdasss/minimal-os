@@ -84,7 +84,7 @@ make help
 
 ### Project 1 — Bootloader Hello World
 
-**Status**: In Progress
+**Status**: Completed
 
 A 512-byte boot sector written in x86 assembly that:
 - Loads at address `0x7C00` (BIOS entry point)
