@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     make \
     qemu-system-x86 \
     gdb \
+    xxd \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a workspace directory
