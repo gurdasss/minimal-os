@@ -15,7 +15,6 @@ start:
     mov si, message
 
     ; Set up the BIOS teletype print function — before we enter the print loop
-    mov ah, 0x0E ; AH = 0x0E is the BIOS teletype output function, which prints a character and advances the cursor.
     mov bh, 0x00 ; BH = 0x00 is the page number (for text mode, this is usually 0)
     mov bl, 0x07 ; BL = 0x07 sets the text attribute (white on black)
 
@@ -23,6 +22,7 @@ print_loop:
     lodsb ; Load the byte at [SI] into AL and increment SI. This is used to read each character of the message.
     cmp al, 0 ; Check if the character is the null terminator (0), which indicates the end of the string.
     je  done ; If we have reached the end of the string, jump to the done label to halt the CPU.
+    mov ah, 0x0E ; AH = 0x0E is the BIOS teletype output function. We reload it here because int 0x10 may clobber AH.
     int 0x10 ; Call the BIOS video interrupt to print the character in AL to the screen using the teletype function.
     jmp print_loop
 
