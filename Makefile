@@ -40,6 +40,12 @@ $(BOOT_BIN): $(BOOT_SRC) | $(BIN_DIR)
 
 boot-run: $(BOOT_BIN)
 	qemu-system-i386 -drive format=raw,file=$(BOOT_BIN) -nographic
+# 	qemu-system-i386 -drive format=raw,file=$(BOOT_BIN) -d int,cpu_reset -nographic
+# 	qemu-system-i386 -drive format=raw,file=$(BOOT_BIN) -nographic -serial stdio
+# 	qemu-system-i386 -drive format=raw,file=$(BOOT_BIN) -display none -serial stdio
+# 	qemu-system-i386 -drive format=raw,file=$(BOOT_BIN) -d int,cpu_reset -display none -serial stdio
+
+
 
 boot-clean:
 	rm -f $(BOOT_BIN)
