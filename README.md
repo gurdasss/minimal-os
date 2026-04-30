@@ -109,7 +109,7 @@ make boot-run
 
 ### Project 2 — Protected Mode Switch
 
-**Status**: Not Started
+**Status**: Completed
 
 Set up a minimal GDT (Global Descriptor Table) and switch the CPU from 16-bit real mode to 32-bit protected mode. Print a confirmation string after the switch.
 
@@ -123,7 +123,7 @@ Set up a minimal GDT (Global Descriptor Table) and switch the CPU from 16-bit re
 
 ### Project 3 — Load the Kernel
 
-**Status**: Not Started
+**Status**: In Progress
 
 Read the kernel binary from disk into memory and jump to it. The kernel is a separate C binary from the bootloader.
 
