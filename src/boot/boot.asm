@@ -26,7 +26,7 @@ start:
     ; BIOS interrupts only work in Real Mode (they use the IVT)
     
     mov bx, 0x1000       ; ES:BX = 0x0000:0x1000 (destination address)
-    mov al, 1            ; number of sectors to read (1 sector = 512 bytes)
+    mov al, 16           ; number of sectors to read (16 sectors = 8KB) - FIXED!
     mov ch, 0            ; cylinder 0
     mov cl, 2            ; sector 2 (sector 1 is boot sector, kernel starts at sector 2)
     mov dh, 0            ; head 0

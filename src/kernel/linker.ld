@@ -1,31 +1,29 @@
-/* Linker Script for the kernel
- * 
- * This script tells the linker how to arrange the kernel code and data
- * in memory. The kernel will be loaded at 0x1000 by the bootloader.
- */
+/* Linker script for minimal-os kernel */
 
-/* Entry point - where execution begins */
-ENTRY(kernel_main)
+ENTRY(kernel_entry)     /* Tell the linker the entry point symbol */
 
 SECTIONS
 {
-    /* Load address: 0x1000 (after the bootloader at 0x7C00 and some reserved space) */
+    /* Kernel starts at 0x1000 (4KB) - loaded by bootloader */
     . = 0x1000;
-    
-    /* Text section: executable code */
+
+    /* Code section */
     .text : {
-        *(.text*)
-        *(.rodata*)
+        *(.text)        /* All .text sections from all object files */
     }
-    
-    /* Data section: initialized data */
+
+    /* Read-only data (string literals, const variables) */
+    .rodata : {
+        *(.rodata)
+    }
+
+    /* Initialized data */
     .data : {
-        *(.data*)
+        *(.data)
     }
-    
-    /* BSS section: uninitialized data (doesn't take space in binary, only in memory) */
+
+    /* Uninitialized data */
     .bss : {
-        *(.bss*)
+        *(.bss)
     }
 }
-

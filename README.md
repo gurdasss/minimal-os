@@ -123,7 +123,7 @@ Set up a minimal GDT (Global Descriptor Table) and switch the CPU from 16-bit re
 
 ### Project 3 — Load the Kernel
 
-**Status**: In Progress
+**Status**: Completed
 
 Read the kernel binary from disk into memory and jump to it. The kernel is a separate C binary from the bootloader.
 
@@ -136,7 +136,7 @@ Read the kernel binary from disk into memory and jump to it. The kernel is a sep
 
 ### Project 4 — Kernel Startup Message
 
-**Status**: Not Started
+**Status**: Completed
 
 From C, write directly to VGA memory at `0xB8000` and print a startup message to the screen.
 
@@ -150,9 +150,9 @@ From C, write directly to VGA memory at `0xB8000` and print a startup message to
 
 ## Done Criteria (v0.1 Complete)
 
-- [ ] QEMU boots the binary
-- [ ] Startup message appears on screen
-- [ ] Every line of code is written and understood by the author
+- [x] QEMU boots the binary
+- [x] Startup message appears on screen
+- [x] Every line of code is written and understood by the author
 
 ---
 

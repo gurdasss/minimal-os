@@ -54,38 +54,49 @@ boot-clean:
 # KERNEL Component
 # ============================================================================
 
-KERNEL_SRC := $(SRC_DIR)/kernel/kernel.c
-KERNEL_LINKER := $(SRC_DIR)/kernel/linker.ld
-KERNEL_OBJ := $(BIN_DIR)/kernel.o
-KERNEL_ELF := $(BIN_DIR)/kernel.elf
+KERNEL_DIR := $(SRC_DIR)/kernel
+KERNEL_ENTRY := $(KERNEL_DIR)/kernel_entry.asm
+KERNEL_C := $(KERNEL_DIR)/kernel.c
+VGA_C := $(KERNEL_DIR)/vga.c
+SERIAL_C := $(KERNEL_DIR)/serial.c
+LINKER_SCRIPT := $(KERNEL_DIR)/linker.ld
+
+KERNEL_ENTRY_O := $(BIN_DIR)/kernel_entry.o
+KERNEL_O := $(BIN_DIR)/kernel.o
+VGA_O := $(BIN_DIR)/vga.o
+SERIAL_O := $(BIN_DIR)/serial.o
 KERNEL_BIN := $(BIN_DIR)/kernel.bin
 
-# Cross-compiler tools
-CC := i686-elf-gcc
-LD := i686-elf-ld
-OBJCOPY := i686-elf-objcopy
-
-# Compiler flags for freestanding kernel
-CFLAGS := -m32 -ffreestanding -O2 -Wall -Wextra -nostdlib -nostdinc -fno-builtin -fno-stack-protector
+# Compiler flags for i686 cross-compilation
+CFLAGS := -m32 -ffreestanding -nostdlib -fno-pie -fno-stack-protector -O2
 
 kernel: kernel-build
 
 kernel-build: $(KERNEL_BIN)
 
-# Step 1: Compile kernel.c to kernel.o (object file)
-$(KERNEL_OBJ): $(KERNEL_SRC) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -c $(KERNEL_SRC) -o $(KERNEL_OBJ)
+# Assemble kernel entry point
+$(KERNEL_ENTRY_O): $(KERNEL_ENTRY) | $(BIN_DIR)
+	nasm -f elf32 $(KERNEL_ENTRY) -o $(KERNEL_ENTRY_O)
 
-# Step 2: Link kernel.o to kernel.elf using the linker script
-$(KERNEL_ELF): $(KERNEL_OBJ) $(KERNEL_LINKER)
-	$(LD) -T $(KERNEL_LINKER) -o $(KERNEL_ELF) $(KERNEL_OBJ)
+# Compile kernel.c
+$(KERNEL_O): $(KERNEL_C) | $(BIN_DIR)
+	gcc $(CFLAGS) -c $(KERNEL_C) -o $(KERNEL_O)
 
-# Step 3: Strip ELF headers to produce raw binary
-$(KERNEL_BIN): $(KERNEL_ELF)
-	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
+# Compile vga.c
+$(VGA_O): $(VGA_C) | $(BIN_DIR)
+	gcc $(CFLAGS) -c $(VGA_C) -o $(VGA_O)
 
+# Compile serial.c
+$(SERIAL_O): $(SERIAL_C) | $(BIN_DIR)
+	gcc $(CFLAGS) -c $(SERIAL_C) -o $(SERIAL_O)
+
+# Link kernel
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O) $(VGA_O) $(SERIAL_O) $(LINKER_SCRIPT) | $(BIN_DIR)
+	ld -m elf_i386 -T $(LINKER_SCRIPT) -o $(KERNEL_BIN) \
+	$(KERNEL_ENTRY_O) $(KERNEL_O) $(VGA_O) $(SERIAL_O) \
+	--oformat binary
 kernel-clean:
-	rm -f $(KERNEL_OBJ) $(KERNEL_ELF) $(KERNEL_BIN)
+	rm -f $(KERNEL_ENTRY_O) $(KERNEL_O) $(VGA_O) $(SERIAL_O) $(KERNEL_BIN)
 
 # ============================================================================
 # OS (Complete Disk Image)
@@ -110,9 +121,10 @@ $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
 	@ls -lh $(OS_IMG)
 
 os-run: $(OS_IMG)
-	@echo "Starting QEMU with disk image..."
+	@echo "========================================"
+	@echo "Running minimal-os with serial output"
 	@echo "Press Ctrl+A then X to quit QEMU"
-	@echo "========================================\n"
+	@echo "========================================"
 	qemu-system-i386 -drive format=raw,file=$(OS_IMG) -display none -serial stdio
 
 os-clean:
